@@ -1,6 +1,6 @@
-<p align="center">
-  <h1>Hi there> <a href="https://www.gautamkrishnar.com/"><img src="https://media.giphy.com/media/hvRJCLFzcasrR4ia7z/giphy.gif" width="5%"></a> </h1
-</p>
+
+<h1 align="center">Hi there <a href="https://www.gautamkrishnar.com/"><img src="https://media.giphy.com/media/hvRJCLFzcasrR4ia7z/giphy.gif" width="5%"></a> </h1
+
 <p align="center">
   <img src="https://github.com/demartini/demartini/blob/master/code.gif">
 </p>
