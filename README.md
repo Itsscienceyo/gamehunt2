@@ -6,5 +6,6 @@
 ![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-00000F?style=for-the-badge&logo=mysql&logoColor=white)
 
-![Anurag's GitHub stats](https://github-readme-stats.vercel.app/api?username=itsscienceyo&show_icons=true&theme=dark)
 [![GitHub Streak](https://streak-stats.demolab.com?user=itsscienceyo&theme=windows-dark)](https://git.io/streak-stats)
+![Anurag's GitHub stats](https://github-readme-stats.vercel.app/api?username=itsscienceyo&show_icons=true&theme=dark)
+
