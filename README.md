@@ -8,10 +8,7 @@
 
 
 
-<p align="center">
-  <img src="https://socialify.git.ci/itsscienceyo/itsscienceyo/image?font=Source%20Code%20Pro&forks=1&issues=1&language=1&name=1&owner=1&pattern=Plus&pulls=1&stargazers=1&theme=Dark" alt="itsscienceyo"
-    width="700" height="300" 
-</p>
+
   
 [![GitHub Streak](https://streak-stats.demolab.com?user=itsscienceyo&theme=windows-dark)](https://git.io/streak-stats)
 ![Anurag's GitHub stats](https://github-readme-stats.vercel.app/api?username=itsscienceyo&show_icons=true&theme=dark)
