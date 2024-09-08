@@ -5,3 +5,4 @@
 ![MySQL](https://img.shields.io/badge/MySQL-00000F?style=for-the-badge&logo=mysql&logoColor=white)
 
 ![Anurag's GitHub stats](https://github-readme-stats.vercel.app/api?username=itsscienceyo&show_icons=true&theme=dark)
+[![GitHub Streak](https://streak-stats.demolab.com?user=itsscienceyo&theme=windows-dark)](https://git.io/streak-stats)
