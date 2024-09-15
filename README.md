@@ -1,4 +1,4 @@
-<p >## Gamehunt
+<h1 align=center > Gamehunt </h1>
 
 
 ## Descpription
