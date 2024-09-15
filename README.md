@@ -6,9 +6,10 @@
 </p>
 
 
+body{
 
-
-
+background: linear-gradient(#e66465, #9198e5);
+}
   
 [![GitHub Streak](https://streak-stats.demolab.com?user=itsscienceyo&theme=windows-dark)](https://git.io/streak-stats)
 ![Anurag's GitHub stats](https://github-readme-stats.vercel.app/api?username=itsscienceyo&show_icons=true&theme=dark)
