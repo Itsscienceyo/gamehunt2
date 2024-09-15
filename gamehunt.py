@@ -17,7 +17,7 @@ screen.resizable(FALSE,FALSE)
 game_images = {}
 current_page = 1  
 
-
+print("hello")
 conn = sqlite3.connect('gamehunt_users.db')
 c = conn.cursor()
 
