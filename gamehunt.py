@@ -6,6 +6,7 @@ from io import BytesIO
 import random 
 from tkinter import messagebox
 import sqlite3
+from responses import responseses
 
 
 screen=Tk()
@@ -59,8 +60,10 @@ def signin():
 user_email = None
 
 current_user_email = None
+current_user_password = None
+
 def validate_signin():
-    global current_user_email
+    global current_user_email, current_user_password,user_email
     email = gmailentry.get()
     password = paswordentryy.get()
 
@@ -69,26 +72,34 @@ def validate_signin():
             conn = sqlite3.connect('gamehunt_users.db')
             c = conn.cursor()
 
+            # Query to find the user with the entered email and password
             c.execute('SELECT * FROM users WHERE email = ? AND password = ?', (email, password))
             user = c.fetchone()
 
             if user:
                 messagebox.showinfo("Success", "Sign in successful!")
                 current_user_email = email
-                signinnn.destroy()  
-                mainscreen() 
+                current_user_password = password  # Store the password in the global variable
+                signinnn.destroy()
+                mainscreen()
             else:
                 messagebox.showerror("Error", "Invalid email or password.")
-
         finally:
             conn.close()
     else:
         messagebox.showerror("Error", "Please fill in all fields!")
 
+
+
+
 def add_to_favorites():
     game_name = favorite_entry.get().strip()
     if not game_name:
         messagebox.showerror("Error", "Please enter a game name.")
+        return
+
+    if not current_user_email:
+        messagebox.showerror("Error", "You need to be signed in to add favorites.")
         return
 
     try:
@@ -99,12 +110,13 @@ def add_to_favorites():
         c.execute('''
             CREATE TABLE IF NOT EXISTS favorites (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                game_name TEXT NOT NULL
+                game_name TEXT NOT NULL,
+                user_email TEXT NOT NULL
             )
         ''')
         
-        # Insert the game_name into the favorites table
-        c.execute('INSERT INTO favorites (game_name) VALUES (?)', (game_name,))
+        # Insert the game_name and the current user's email into the favorites table
+        c.execute('INSERT INTO favorites (game_name, user_email) VALUES (?, ?)', (game_name, current_user_email))
         conn.commit()
 
         messagebox.showinfo("Success", f"'{game_name}' has been added to your favorites!")
@@ -118,13 +130,18 @@ def add_to_favorites():
 
 
 def view_favorites():
-    global current_user_email
-   
+    global current_user_email, favorites
+
+    if not current_user_email:
+        messagebox.showerror("Error", "You need to be signed in to view your favorites.")
+        return
 
     try:
         conn = sqlite3.connect('gamehunt_users.db')
         c = conn.cursor()
-        c.execute('SELECT game_name FROM favorites')
+
+        # Retrieve only the favorite games for the current user
+        c.execute('SELECT game_name FROM favorites WHERE user_email = ?', (current_user_email,))
         favorites = c.fetchall()
 
         if favorites:
@@ -159,6 +176,7 @@ def signup():
     submitButtonn.place(x=70,y=210)
 
 def save_user_to_db():
+    global current_user_email, current_user_password,user_email
     email = gmailentryy.get()
     password = paswordentry.get()
 
@@ -166,12 +184,21 @@ def save_user_to_db():
         try:
             conn = sqlite3.connect('gamehunt_users.db')
             c = conn.cursor()
+            
+            # Insert new user into the database
             c.execute('INSERT INTO users (email, password) VALUES (?, ?)', (email, password))
             conn.commit()
+
+            # Store email and password in global variables
+            current_user_email = email
+            current_user_password = password
+
             messagebox.showinfo("Success", "Sign up successful!")
-            print(email,password)
-            signuplev.destroy()  
-            mainscreen()  
+            print(email, password)
+
+            # Close the signup window and open the main screen
+            signuplev.destroy()
+            mainscreen()
 
         except sqlite3.IntegrityError:
             messagebox.showerror("Error", "This email is already registered!")
@@ -207,7 +234,7 @@ def mainscreen():
     view_favorites_button.place(x=440, y=145)
     global favorite_entry
 
-    favorite_entry = Entry(mainscreen, width=30, border=2)
+    favorite_entry = Entry(mainscreen, width=27, border=2)
     favorite_entry.place(x=350, y=115)
 
 
@@ -224,6 +251,14 @@ def mainscreen():
 
     chat=Button(mainscreen,text="Chat",border=2,font="Ariel 10 bold",bg="#46cf15",fg="black",command=chatt)
     chat.place(x=20,y=80)
+
+    profil=Button(mainscreen,text="Profil",border=2,font="Ariel 10 bold",bg="#46cf15",fg="black",command=profia)
+    profil.place(x=140,y=120)
+
+    aboutme=Button(mainscreen,text="About us",border=2,font="Ariel 10 italic bold",bg="#46cf15",fg="black",command=aboutse)
+    aboutme.place(x=200,y=120)
+
+
 
 
 
@@ -416,24 +451,127 @@ def mainscreen():
 
         update_nav_buttons()
 
+def profia():
+    global current_user_email,current_user_password
+    profil_screen=Toplevel()
+    profil_screen.geometry("500x300")
+    profil_screen.title("Profil")
+    profil_screen.resizable(FALSE,FALSE)
+    profil_screen.config(bg="#060917")
+
+  
+
+
+    user_name=Label(profil_screen,text=f"User:  {current_user_email}",fg="#58C525",bg="#060917",font="Ariel 15 bold")
+    user_name.place(x=10,y=10)
+
+    user_password=Label(profil_screen,text=f"password:  {current_user_password}",fg="#58C525",bg="#060917",font="Ariel 15 bold")
+    user_password.place(x=10,y=50)
+
+
+    saved_games=Label(profil_screen,text="saved games:",fg="#58C525",bg="#060917",font="Ariel 15 bold")
+    saved_games.place(x=10,y=90)
+
+    saved_games_viev=Text(profil_screen,width=40,height=10,bg="#393f4d")
+    saved_games_viev.place(x=10,y=130)
+
+    try:
+        
+        conn = sqlite3.connect('gamehunt_users.db')
+        c = conn.cursor()
+
+        
+        c.execute('SELECT game_name FROM favorites WHERE user_email = ?', (current_user_email,))
+        favorites = c.fetchall()
+
+        if favorites:
+            for game in favorites:
+                saved_games_viev.insert(END, game[0] +"\n") 
+        else:
+            saved_games_viev.insert(END, "No saved games yet.")
+
+    finally:
+        conn.close()
+
+
+    saved_games_viev.config(state=DISABLED)
+
+
+
+def aboutse():
+        aboutke=Toplevel()
+        aboutke.geometry("550x470")
+        aboutke.resizable(FALSE,FALSE)
+        aboutke.config(bg="#393f4d")
+
+        me=Label(aboutke,text="Welcome to Gamehunt, your ultimate tool for discovering new and exciting games!\n"
+            "Whether you're looking for something specific or want a random recommendation,\n"
+            "Gamehunt is designed to help you find the perfect game for your next adventure.\n\n"
+            "With Gamehunt, you can:\n\n"
+            "- Search for Games: Easily find your favorite games by name or browse\n"
+            "through our extensive library of titles. Whether you're in the mood for\n"
+            "a classic or something new, we’ve got you covered!\n\n"
+            "- Get Random Suggestions: Not sure what to play? Let us suggest a game\n"
+            "based on your preferences, or discover something completely unexpected!\n\n"
+            "- Save Games for Later: Found a game you're excited about? Save it to your list,\n"
+            "so you can play whenever you're ready.\n\n"
+            "- Chat with Our Game Bot: Unsure where to start or want to chat about games?\n"
+            "Our friendly bot is here to assist you with recommendations and more.\n\n"
+            "At Gamehunt, we believe finding the right game should be easy, fun, and\n"
+            "personalized. Whether you're a casual player or a dedicated gamer,\n"
+            "we're here to help you explore the gaming world and find your next\n"
+            "favorite experience.\n\n"
+            "Happy gaming!",fg="#58C525",bg="#393f4d",font="Ariel 10 bold")
+        me.pack()
+
+
+
 def chatt():
-    chatscreen=Toplevel()
-    chatscreen.geometry("200x200+600+200")
+    chatscreen = Toplevel()
+    chatscreen.geometry("320x250+600+200")
+    chatscreen.resizable(FALSE,FALSE)
     chatscreen.title("Chat")
     chatscreen.config(bg="#393f4d")
 
-    def gettextt():
-        input = inputt.get()
-        chata.insert(END,input+"\n")
+    def gönder():
+        user_message = inputt.get().strip()
+        if user_message:
+            chata.insert(END, "You: " + user_message + "\n")
+            respond(user_message)
+            inputt.delete(0, END)
 
-    inputt= Entry(chatscreen,width=20)
-    inputt.place(x=10,y=170)
+    def gettextt(response):
+        chata.insert(END, "Bot: " + response + "\n")
 
-    send=Button(chatscreen,text="Send",border=2,bg="#46cf15",fg="black",font="Ariel 10 bold",command=gettextt)
-    send.place(x=140,y=165)
+    def respond(user_message):
+        print(f"User message: {user_message}")  
+        
+      
+        bot_response = responseses.get(user_message, "Sorry, I don't understand that. Make sure to type properly and in full form!")
+        
+        print(f"Bot response: {bot_response}")  
+        gettextt(bot_response)
 
-    chata=Text(chatscreen,width=25,height=10)
-    chata.place(x=0,y=0)
+
+
+    inputt = Entry(chatscreen, width=20)
+    inputt.place(x=10, y=210)
+
+    send = Button(chatscreen, text="Send", border=2, bg="#46cf15", fg="black", font="Ariel 10 bold", command=gönder)
+    send.place(x=150, y=210)
+
+    frame = Frame(chatscreen)
+    frame.place(x=10, y=10)
+
+    chata = Text(frame, width=35, height=12, bg="white")
+    chata.pack(side=LEFT, fill=BOTH)
+
+    scrollbar = Scrollbar(frame, command=chata.yview)
+    scrollbar.pack(side=RIGHT, fill=X)
+
+    chata.config(yscrollcommand=scrollbar.set) 
+
+
 
 navbar=Frame(screen,width=300,height=40,bg="#393f4d")
 navbar.place(x=0,y=0)
